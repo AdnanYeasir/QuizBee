@@ -5,53 +5,53 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
-import useAxios from "../hooks/useAxios";
-import { handleScoreChange } from "../redux/actions";
+import useCustomAxios from "../hooks/useCustomAxios"; 
+import { updateScore } from "../redux/actions"; 
 
 const getRandomInt = (max) => {
   return Math.floor(Math.random() * Math.floor(max));
 };
 
-const Questions = () => {
+const CustomQuestions = () => {
   const {
-    question_category,
-    question_difficulty,
-    question_type,
-    amount_of_question,
-    score,
+    selectedCategory,
+    selectedDifficulty,
+    selectedType,
+    numberOfQuestions,
+    userScore, 
   } = useSelector((state) => state);
-  const history = useHistory();
-  const dispatch = useDispatch();
+  const navigationHistory = useHistory(); 
+  const reduxDispatch = useDispatch();
 
-  let apiUrl = `/api.php?amount=${amount_of_question}`;
-  if (question_category) {
-    apiUrl = apiUrl.concat(`&category=${question_category}`);
+  let apiUrl = `/api.php?amount=${numberOfQuestions}`;
+  if (selectedCategory) {
+    apiUrl = apiUrl.concat(`&category=${selectedCategory}`);
   }
-  if (question_difficulty) {
-    apiUrl = apiUrl.concat(`&difficulty=${question_difficulty}`);
+  if (selectedDifficulty) {
+    apiUrl = apiUrl.concat(`&difficulty=${selectedDifficulty}`);
   }
-  if (question_type) {
-    apiUrl = apiUrl.concat(`&type=${question_type}`);
+  if (selectedType) {
+    apiUrl = apiUrl.concat(`&type=${selectedType}`);
   }
 
-  const { response, loading } = useAxios({ url: apiUrl });
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [options, setOptions] = useState([]);
+  const { responseData, isLoading } = useCustomAxios({ apiUrl });
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); 
+  const [answerOptions, setAnswerOptions] = useState([]); 
 
   useEffect(() => {
-    if (response?.results.length) {
-      const question = response.results[questionIndex];
-      let answers = [...question.incorrect_answers];
+    if (responseData?.results.length) {
+      const currentQuestion = responseData.results[currentQuestionIndex];
+      let answers = [...currentQuestion.incorrect_answers];
       answers.splice(
-        getRandomInt(question.incorrect_answers.length),
+        getRandomInt(currentQuestion.incorrect_answers.length),
         0,
-        question.correct_answer
+        currentQuestion.correct_answer
       );
-      setOptions(answers);
+      setAnswerOptions(answers);
     }
-  }, [response, questionIndex]);
+  }, [responseData, currentQuestionIndex]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box mt={20}>
         <CircularProgress />
@@ -59,37 +59,37 @@ const Questions = () => {
     );
   }
 
-  const handleClickAnswer = (e) => {
-    const question = response.results[questionIndex];
-    if (e.target.textContent === question.correct_answer) {
-      dispatch(handleScoreChange(score + 1));
+  const handleAnswerClick = (e) => {
+    const currentQuestion = responseData.results[currentQuestionIndex];
+    if (e.target.textContent === currentQuestion.correct_answer) {
+      reduxDispatch(updateScore(userScore + 1)); 
     }
 
-    if (questionIndex + 1 < response.results.length) {
-      setQuestionIndex(questionIndex + 1);
+    if (currentQuestionIndex + 1 < responseData.results.length) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      history.push("/score");
+      navigationHistory.push("/score");
     }
   };
 
   return (
     <Box>
-      <Typography variant="h4">Questions {questionIndex + 1}</Typography>
+      <Typography variant="h4">Question {currentQuestionIndex + 1}</Typography>
       <Typography mt={5}>
-        {decode(response.results[questionIndex].question)}
+        {decode(responseData.results[currentQuestionIndex].question)}
       </Typography>
-      {options.map((data, id) => (
+      {answerOptions.map((option, id) => (
         <Box mt={2} key={id}>
-          <Button onClick={handleClickAnswer} variant="contained">
-            {decode(data)}
+          <Button onClick={handleAnswerClick} variant="contained">
+            {decode(option)}
           </Button>
         </Box>
       ))}
       <Box mt={5}>
-        Score: {score} / {response.results.length}
+        Score: {userScore} / {responseData.results.length}
       </Box>
     </Box>
   );
 };
 
-export default Questions;
+export default CustomQuestions;

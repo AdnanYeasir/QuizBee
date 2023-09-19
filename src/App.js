@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Settings from "./pages/Settings";
-import Questions from "./pages/Questions";
-import FinalScreen from "./pages/FinalScreen";
+import CustomSettings from "./pages/CustomSettings"; 
+import CustomQuestions from "./pages/CustomQuestions"; 
+import CustomFinalScreen from "./pages/CustomFinalScreen"; 
 import { Container, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 
-function App() {
+function CustomApp() { 
   return (
     <Router>
       <Container maxWidth="sm">
@@ -15,13 +15,13 @@ function App() {
               <Typography variant="h2" fontWeight="bold">
                 Quiz App
               </Typography>
-              <Settings />
+              <CustomSettings />
             </Route>
             <Route path="/questions">
-              <Questions />
+              <CustomQuestions /> 
             </Route>
             <Route path="/score">
-              <FinalScreen />
+              <CustomFinalScreen />
             </Route>
           </Switch>
         </Box>
@@ -30,4 +30,4 @@ function App() {
   );
 }
 
-export default App;
+export default CustomApp; 

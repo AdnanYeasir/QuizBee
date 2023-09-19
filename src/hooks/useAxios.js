@@ -3,23 +3,23 @@ import { useEffect, useState } from "react";
 
 axios.defaults.baseURL = "https://opentdb.com";
 
-const useAxios = ({ url }) => {
-  const [response, setResponse] = useState(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+const useCustomAxios = ({ apiUrl }) => {
+  const [responseData, setResponseData] = useState(null);
+  const [errorData, setErrorData] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = () => {
       axios
-        .get(url)
-        .then((res) => setResponse(res.data))
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
+        .get(apiUrl)
+        .then((response) => setResponseData(response.data))
+        .catch((error) => setErrorData(error))
+        .finally(() => setIsLoading(false));
     };
     fetchData();
-  }, [url]);
+  }, [apiUrl]);
 
-  return { response, error, loading };
+  return { responseData, errorData, isLoading };
 };
 
-export default useAxios;
+export default useCustomAxios;

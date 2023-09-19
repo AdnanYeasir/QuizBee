@@ -3,29 +3,29 @@ import { Box } from "@mui/system";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
-import { handleAmountChange, handleScoreChange } from "../redux/actions";
+import { resetScore, setQuestionAmount } from "../redux/actions"; 
 
-const FinalScreen = () => {
-  const disptach = useDispatch();
-  const history = useHistory();
-  const { score } = useSelector((state) => state);
+const CustomFinalScreen = () => {
+  const reduxDispatch = useDispatch();
+  const navigationHistory = useHistory(); 
+  const { finalScore } = useSelector((state) => state); 
 
-  const handleBackToSettings = () => {
-    disptach(handleScoreChange(0));
-    disptach(handleAmountChange(50));
-    history.push("/");
+  const handleReturnToSettings = () => {
+    reduxDispatch(resetScore()); 
+    reduxDispatch(setQuestionAmount(50)); 
+    navigationHistory.push("/");
   };
 
   return (
     <Box mt={30}>
       <Typography variant="h3" fontWeight="bold" mb={3}>
-        Final Score {score}
+        Final Score {finalScore}
       </Typography>
-      <Button onClick={handleBackToSettings} variant="outlined">
-        back to settings!
+      <Button onClick={handleReturnToSettings} variant="outlined">
+        Back to Settings!
       </Button>
     </Box>
   );
 };
 
-export default FinalScreen;
+export default CustomFinalScreen;

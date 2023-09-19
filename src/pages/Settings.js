@@ -1,15 +1,17 @@
 import { Button, CircularProgress, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useHistory } from "react-router-dom";
-import SelectField from "../components/SelectField";
-import TextFieldComp from "../components/TextFieldComp";
-import useAxios from "../hooks/useAxios";
+import CustomSelectField from "../components/CustomSelectField"; 
+import CustomTextField from "../components/CustomTextField"; 
+import useCustomAxios from "../hooks/useCustomAxios"; 
 
-const Settings = () => {
-  const { response, error, loading } = useAxios({ url: "/api_category.php" });
-  const history = useHistory();
+const CustomSettings = () => {
+  const { responseData, errorData, isLoading } = useCustomAxios({
+    apiUrl: "/api_category.php", 
+  });
+  const navigationHistory = useHistory(); 
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box mt={20}>
         <CircularProgress />
@@ -17,10 +19,10 @@ const Settings = () => {
     );
   }
 
-  if (error) {
+  if (errorData) {
     return (
       <Typography variant="h6" mt={20} color="red">
-        Some Went Wrong!
+        Something Went Wrong! 
       </Typography>
     );
   }
@@ -32,21 +34,21 @@ const Settings = () => {
   ];
 
   const typeOptions = [
-    { id: "multiple", name: "Multiple Choise" },
+    { id: "multiple", name: "Multiple Choice" }, 
     { id: "boolean", name: "True/False" },
   ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    history.push("/questions");
+    navigationHistory.push("/questions");
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <SelectField options={response.trivia_categories} label="Category" />
-      <SelectField options={difficultyOptions} label="Difficulty" />
-      <SelectField options={typeOptions} label="Type" />
-      <TextFieldComp />
+      <CustomSelectField options={responseData.trivia_categories} label="Category" /> 
+      <CustomSelectField options={difficultyOptions} label="Difficulty" />
+      <CustomSelectField options={typeOptions} label="Type" />
+      <CustomTextField /> 
       <Box mt={3} width="100%">
         <Button fullWidth variant="contained" type="submit">
           Get Started
@@ -56,4 +58,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default CustomSettings;
